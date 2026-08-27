@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 import joblib
 import uuid
-from app.models.schemas import PredictionInput
+from app.models.schemas import PredictionInput, PredictionOutput
 
 
 @asynccontextmanager
@@ -15,13 +16,23 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+class PredictionError(Exception):
+    pass
+
+
+@app.exception_handler(PredictionError)
+async def prediction_error_handler(request: Request, exc: PredictionError):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Prediction failed"}
+    )
+
 
 @app.get("/")
 def root():
     return {"message": "ML API is alive"}
 
-
-@app.post("/predict")
+@app.post("/predict", response_model=PredictionOutput)
 def predict(data: PredictionInput):
     features = [[
         data.sepal_length,
@@ -30,18 +41,28 @@ def predict(data: PredictionInput):
         data.petal_width
     ]]
 
-    prediction = app.state.model.predict(features)
+    try:
+        
+        prediction = app.state.model.predict(features)
 
-    probabilities = app.state.model.predict_proba(features)
-    confidence = float(max(probabilities[0]))
+        probabilities = app.state.model.predict_proba(features)
+        confidence = float(max(probabilities[0]))
 
-    request_id = str(uuid.uuid4())
+        request_id = str(uuid.uuid4())
 
-    return {
-        "prediction": int(prediction[0]),
-        "confidence": confidence,
-        "request_id": request_id
-    }
+        return {
+            "prediction": int(prediction[0]),
+            "confidence": confidence,
+            "model_version": "1.0",
+            "request_id": request_id
+        }
+
+    except Exception as e:
+        print(f"Prediction error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Prediction failed"
+        )
 
 @app.get("/health")
 def health():
