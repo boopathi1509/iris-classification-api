@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 import joblib
+from app.models.schemas import PredictionInput
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load the ML model once when the application starts
     app.state.model = joblib.load("ml/saved_model/model.joblib")
     print("ML model loaded successfully!")
 
@@ -21,8 +21,13 @@ def root():
 
 
 @app.post("/predict")
-def predict():
-    features = [[6.7, 3.0, 5.2, 2.3]]
+def predict(data: PredictionInput):
+    features = [[
+        data.sepal_length,
+        data.sepal_width,
+        data.petal_length,
+        data.petal_width
+    ]]
 
     prediction = app.state.model.predict(features)
 
