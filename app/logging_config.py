@@ -2,13 +2,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 
+logger = logging.getLogger("ml_api")
+
+
 def setup_logging():
-
-    logger = logging.getLogger("ml_api")
     logger.setLevel(logging.INFO)
-
-    if logger.handlers:
-        return logger
 
     formatter = logging.Formatter(
         "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
@@ -19,12 +17,11 @@ def setup_logging():
 
     file_handler = RotatingFileHandler(
         "app.log",
-        maxBytes=5_000_000,
+        maxBytes=5 * 1024 * 1024,
         backupCount=3
     )
     file_handler.setFormatter(formatter)
 
-    logger.addHandler(console_handler)
-    logger.addHandler(file_handler)
-
-    return logger
+    if not logger.handlers:
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
