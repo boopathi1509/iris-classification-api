@@ -1,6 +1,13 @@
+import json
 from fastapi import APIRouter, HTTPException, Request
 
-from app.models.schemas import PredictionInput, PredictionOutput
+from app.models.schemas import (
+    PredictionInput,
+    PredictionOutput,
+    PredictionBatchInput,
+    PredictionBatchOutput
+)
+
 from app.logging_config import logger
 
 
@@ -62,6 +69,80 @@ def health(request: Request):
         "status": "ok",
         "model_loaded": model_loaded
     }
+
+
+@router.post("/predict-batch", response_model=PredictionBatchOutput)
+def predict_batch(data: PredictionBatchInput, request: Request):
+
+    features = [
+        [
+            item.sepal_length,
+            item.sepal_width,
+            item.petal_length,
+            item.petal_width
+        ]
+        for item in data.inputs
+    ]
+
+    try:
+        model = request.app.state.model
+
+        predictions = model.predict(features)
+        probabilities = model.predict_proba(features)
+
+        request_id = request.state.request_id
+
+        results = []
+
+        for i in range(len(predictions)):
+
+            confidence = float(max(probabilities[i]))
+
+            results.append({
+                "prediction": int(predictions[i]),
+                "confidence": confidence,
+                "model_version": "1.0",
+                "request_id": request_id
+            })
+
+        logger.info(
+            f"Batch prediction successful | "
+            f"request_id={request_id} | "
+            f"batch_size={len(data.inputs)}"
+        )
+
+        return {
+            "predictions": results
+        }
+
+    except Exception as e:
+
+        request_id = request.state.request_id
+
+        logger.error(
+            f"Batch prediction failed | "
+            f"request_id={request_id} | "
+            f"batch_size={len(data.inputs)} | "
+            f"error={e}"
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Batch prediction failed"
+        )
+
+
+@router.get("/model-info")
+def model_info(request: Request):
+
+    model = request.app.state.model
+
+    with open("ml/saved_model/model_metadata.json", "r") as file:
+        metadata = json.load(file)
+
+    metadata["model_type"] = type(model).__name__
+
+    return metadata
 
 
 # Task 10 - Versioning plan:
