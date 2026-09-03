@@ -29,12 +29,10 @@ class PredictionBatchInput(BaseModel):
     inputs: List[PredictionInput] = Field(
         ...,
         min_length=1,
-        max_length=100,
-        description="List of 1 to 100 prediction inputs"
+        description="List of prediction inputs"
     )
 
 
 class PredictionBatchOutput(BaseModel):
 
     predictions: List[PredictionOutput]
-

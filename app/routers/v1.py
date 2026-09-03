@@ -9,6 +9,7 @@ from app.models.schemas import (
 )
 
 from app.logging_config import logger
+from app.config import settings
 
 
 router = APIRouter(prefix="/api/v1")
@@ -73,6 +74,12 @@ def health(request: Request):
 
 @router.post("/predict-batch", response_model=PredictionBatchOutput)
 def predict_batch(data: PredictionBatchInput, request: Request):
+
+        if len(data.inputs) > settings.MAX_BATCH_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Batch size cannot exceed {settings.MAX_BATCH_SIZE}"
+        )
 
     features = [
         [
