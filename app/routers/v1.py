@@ -75,7 +75,7 @@ def health(request: Request):
 @router.post("/predict-batch", response_model=PredictionBatchOutput)
 def predict_batch(data: PredictionBatchInput, request: Request):
 
-        if len(data.inputs) > settings.MAX_BATCH_SIZE:
+    if len(data.inputs) > settings.MAX_BATCH_SIZE:
         raise HTTPException(
             status_code=400,
             detail=f"Batch size cannot exceed {settings.MAX_BATCH_SIZE}"
