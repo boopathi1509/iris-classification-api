@@ -8,6 +8,7 @@ import joblib
 from app.logging_config import setup_logging, logger
 from app.config import settings
 from app.routers.v1 import router as v1_router
+from app.routers.v2 import router as v2_router
 
 
 setup_logging()
@@ -50,6 +51,7 @@ async def logging_middleware(request: Request, call_next):
 
 
 app.include_router(v1_router)
+app.include_router(v2_router)
 
 
 @app.get("/")

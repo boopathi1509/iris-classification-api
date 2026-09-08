@@ -23,6 +23,15 @@ class PredictionOutput(BaseModel):
 
     request_id: str
 
+class PredictionV2Output(BaseModel):
+
+    prediction: int
+
+    probabilities: dict[int, float]
+
+    model_version: str
+
+    request_id: str
 
 class PredictionBatchInput(BaseModel):
 
