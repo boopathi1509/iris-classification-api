@@ -49,3 +49,17 @@ The API accepts:
   "petal_width": 0.2
 }
 
+## How to run this project
+
+1. Make sure Docker Desktop is running.
+
+2. Open PowerShell in the project folder.
+
+3. Run:
+   docker compose up --build
+
+4. Open the API documentation:
+   http://localhost:8000/docs
+
+5. To stop the application:
+   Ctrl + C
