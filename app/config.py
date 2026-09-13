@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     MAX_BATCH_SIZE: int = 100
     API_TITLE: str = "ML API"
+    API_KEY: str
+    CORS_ORIGINS: str = "http://localhost:3000"
 
     model_config = SettingsConfigDict(
         env_file=".env",

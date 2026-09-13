@@ -1,8 +1,9 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class PredictionInput(BaseModel):
+
 
     sepal_length: float = Field(..., gt=0, description="Sepal length must be positive")
 
@@ -11,6 +12,8 @@ class PredictionInput(BaseModel):
     petal_length: float = Field(..., gt=0, description="Petal length must be positive")
 
     petal_width: float = Field(..., gt=0, description="Petal width must be positive")
+
+    model_config = ConfigDict(extra="forbid")
 
 
 class PredictionOutput(BaseModel):

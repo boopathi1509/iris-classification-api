@@ -1,5 +1,5 @@
 import json
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
 
 from app.models.schemas import (
     PredictionInput,
@@ -10,9 +10,13 @@ from app.models.schemas import (
 
 from app.logging_config import logger
 from app.config import settings
+from app.security import verify_api_key
 
 
-router = APIRouter(prefix="/api/v1")
+router = APIRouter(
+    prefix="/api/v1",
+    dependencies=[Depends(verify_api_key)]
+)
 
 
 @router.post("/predict", response_model=PredictionOutput)
