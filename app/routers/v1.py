@@ -1,11 +1,18 @@
 import json
 from fastapi import APIRouter, HTTPException, Request, Depends
+from prometheus_client import Counter
 
 from app.models.schemas import (
     PredictionInput,
     PredictionOutput,
     PredictionBatchInput,
     PredictionBatchOutput
+)
+
+prediction_counter = Counter(
+    "ml_predictions_total",
+    "Total number of ML predictions by predicted class",
+    ["predicted_class"]
 )
 
 from app.logging_config import logger
@@ -34,6 +41,10 @@ def predict(data: PredictionInput, request: Request):
 
         probabilities = request.app.state.model.predict_proba(features)
         confidence = float(max(probabilities[0]))
+
+        prediction_counter.labels(
+    predicted_class=str(int(prediction[0]))
+).inc()
 
         request_id = request.state.request_id
 

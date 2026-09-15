@@ -3,6 +3,7 @@ from time import perf_counter
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
+from prometheus_fastapi_instrumentator import Instrumentator
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 
@@ -26,6 +27,7 @@ app = FastAPI(
     title=settings.API_TITLE,
     lifespan=lifespan
 )
+Instrumentator().instrument(app).expose(app)
 
 app.add_middleware(
     CORSMiddleware,
