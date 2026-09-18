@@ -44,4 +44,5 @@ async def main():
     print(f"Average response time: {avg_time:.4f} seconds")
     print(f"Total test time: {total_time:.4f} seconds")
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

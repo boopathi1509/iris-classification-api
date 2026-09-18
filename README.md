@@ -1,65 +1,155 @@
 # Iris Flower Classification API
 
-## Project Overview
+A Machine Learning API that predicts the Iris flower type using **FastAPI** and **Logistic Regression**.
 
-This project aims to build a simple Machine Learning REST API that predicts the species of an Iris flower based on its measurements.
+## Features
 
-## Dataset
+* Iris flower prediction
+* FastAPI REST API
+* API validation
+* API key security
+* API v1 and v2
+* Batch prediction
+* Docker & Docker Compose
+* Prometheus monitoring
+* Automated testing
 
-Iris Dataset from Scikit-learn.
+## Technologies
 
-## Machine Learning Problem
+* Python
+* FastAPI
+* Scikit-learn
+* Pandas
+* Docker
+* Prometheus
+* Pytest
 
-Classification
+## Architecture
 
-## Machine Learning Model
+text
+User
+  ↓
+FastAPI
+  ↓
+Validation + API Key
+  ↓
+ML Model
+  ↓
+Prediction
+  ↓
+Response + Logs + Metrics
 
-Logistic Regression
 
-## Iris Flower Species
+## How to Run
 
-- Setosa
-- Versicolor
-- Virginica
+Make sure Docker Desktop is running.
 
-## API Contract
+bash
+docker compose up --build
 
-The `/predict` endpoint will accept four numerical values representing the measurements of an Iris flower.
 
-The API will validate the input values and send them to the Machine Learning model. The model will predict the species of the Iris flower.
+Open Swagger:
 
-The API will return the predicted flower species in JSON format.
+text
+http://localhost:8000/docs
 
-### Input
 
-The API accepts:
+## API Endpoints
 
-- Sepal Length
-- Sepal Width
-- Petal Length
-- Petal Width
+### Health
 
-### Example Input
+text
+GET /api/v1/health
 
-```json
-{
-  "sepal_length": 5.1,
-  "sepal_width": 3.5,
-  "petal_length": 1.4,
-  "petal_width": 0.2
-}
 
-## How to run this project
+### Prediction V1
 
-1. Make sure Docker Desktop is running.
+text
+POST /api/v1/predict
 
-2. Open PowerShell in the project folder.
 
-3. Run:
-   docker compose up --build
+Example:
 
-4. Open the API documentation:
-   http://localhost:8000/docs
+bash
+curl -X POST http://localhost:8000/api/v1/predict -H "Content-Type: application/json" -H "X-API-Key: your-api-key-here" -d "{\"sepal_length\":5.1,\"sepal_width\":3.5,\"petal_length\":1.4,\"petal_width\":0.2}"
 
-5. To stop the application:
-   Ctrl + C
+
+### Prediction V2
+
+text
+POST /api/v2/predict
+
+
+### Batch Prediction
+
+text
+POST /api/v1/predict-batch
+
+
+### Model Information
+
+text
+GET /api/v1/model-info
+
+
+### Metrics
+
+text
+GET /metrics
+
+
+## Testing
+
+Run:
+
+```bash
+pytest -v
+
+
+Latest result:
+
+`text
+11 passed
+`
+
+Load test:
+
+`bash
+python load_test.py
+`
+
+Result:
+
+`text
+50 successful
+0 failed
+`
+
+## Security
+
+Prediction endpoints require an `X-API-Key`.
+
+Invalid or missing API keys return `401 Unauthorized`.
+
+## What I Learned
+
+I learned how to:
+
+* Build an ML model
+* Create a FastAPI service
+* Validate API inputs
+* Add API security
+* Use Docker and Docker Compose
+* Add Prometheus monitoring
+* Write automated tests
+* Perform load testing
+
+## Independent Extension
+
+Will be added as part of Task 20.
+
+## Project Status
+
+Core API, testing, Docker, security and monitoring are completed.
+
+Public deployment and independent extension are pending.
